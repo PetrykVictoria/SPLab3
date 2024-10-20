@@ -22,7 +22,7 @@ struct Token {
     TokenType type;
 };
 
-// Color codes for different token types
+
 std::string getColor(TokenType type) {
     switch (type) {
     case TokenType::Number: return "\033[0;32m";            // Green for numbers
@@ -35,18 +35,18 @@ std::string getColor(TokenType type) {
     case TokenType::Comment: return "\033[1;90m";           // Gray for comments
     case TokenType::Type: return "\033[0;33m";              // Brown for types
     case TokenType::Macro: return "\033[1;35m";             // Purple for macros
-    default: return "\033[1;31m";                            // Default color for unknown types
+    default: return "\033[1;31m";                           // Default color for unknown types
     }
 }
 
 const std::string RESET_COLOR = "\033[0m";
 
 
-// Updated tokenizer
+
 std::vector<Token> tokenize(const std::string& code) {
     std::vector<Token> tokens;
 
-    // Regular expressions for different lexemes
+    
     std::regex number_regex(R"(\b0x[0-9a-fA-F]+|\b\d+(\.\d+)?\b)");
     std::regex string_literal_regex(R"("([^"\\]|\\.)*")");
     std::regex comment_regex(R"(//.*|/\*[\s\S]*?\*/)");
@@ -64,59 +64,59 @@ std::vector<Token> tokenize(const std::string& code) {
     while (search_start != code.cend()) {
         std::smatch match;
 
-        // Comment handling
+        
         if (std::regex_search(search_start, code.cend(), match, comment_regex) && match.position() == 0) {
             tokens.push_back({ match.str(), TokenType::Comment });
         }
-        // String literal handling
+       
         else if (std::regex_search(search_start, code.cend(), match, string_literal_regex) && match.position() == 0) {
             tokens.push_back({ match.str(), TokenType::StringLiteral });
         }
-        // Number handling
+        
         else if (std::regex_search(search_start, code.cend(), match, number_regex) && match.position() == 0) {
             tokens.push_back({ match.str(), TokenType::Number });
         }
-        // Macro handling
+        
         else if (std::regex_search(search_start, code.cend(), match, macro_regex) && match.position() == 0) {
             tokens.push_back({ match.str(), TokenType::Macro });
         }
-        // Operator handling
+       
         else if (std::regex_search(search_start, code.cend(), match, operator_regex) && match.position() == 0) {
             tokens.push_back({ match.str(), TokenType::Operator });
         }
-        // Function handling
+        
         else if (std::regex_search(search_start, code.cend(), match, function_regex) && match.position() == 0) {
             std::string function_token = match.str();
             tokens.push_back({ function_token.substr(0, function_token.find('(')), TokenType::Function });
             tokens.push_back({ "(", TokenType::Delimiter });
         }
-        // Reserved word handling
+        
         else if (std::regex_search(search_start, code.cend(), match, reserved_word_regex) && match.position() == 0) {
             tokens.push_back({ match.str(), TokenType::ReservedWord });
         }
-        // Library handling
+        
         else if (std::regex_search(search_start, code.cend(), match, library_regex) && match.position() == 0) {
             tokens.push_back({ "use", TokenType::ReservedWord });
             std::string library_name = match.str();
-            size_t start = library_name.find(" ") + 1; // Find space after "use"
-            size_t end = library_name.find(";", start); // Find semicolon
-            tokens.push_back({ library_name.substr(start, end - start), TokenType::Identifier }); // Add as identifier
+            size_t start = library_name.find(" ") + 1; 
+            size_t end = library_name.find(";", start); 
+            tokens.push_back({ library_name.substr(start, end - start), TokenType::Identifier });
         }
-        // Type handling
+        
         else if (std::regex_search(search_start, code.cend(), match, type_regex) && match.position() == 0) {
             tokens.push_back({ match.str(), TokenType::Type });
         }
-        // Delimiter handling (detailed handling for delimiters like (){}[])
+       
         else if (std::regex_search(search_start, code.cend(), match, delimiter_regex) && match.position() == 0) {
             tokens.push_back({ match.str(), TokenType::Delimiter });
         }
-        // Identifier handling
+        
         else if (std::regex_search(search_start, code.cend(), match, identifier_regex) && match.position() == 0) {
             tokens.push_back({ match.str(), TokenType::Identifier });
         }
         else {
             tokens.push_back({ std::string(1, *search_start), TokenType::Unknown });
-            ++search_start; // Move to the next character
+            ++search_start; 
             continue;
         }
 
@@ -127,7 +127,6 @@ std::vector<Token> tokenize(const std::string& code) {
     return tokens;
 }
 
-// Function to print tokens with colors
 void printTokens(const std::vector<Token>& tokens) {
     for (const auto& token : tokens) {
         std::cout << getColor(token.type) << token.value << RESET_COLOR << " ";
@@ -135,7 +134,6 @@ void printTokens(const std::vector<Token>& tokens) {
     std::cout << std::endl;
 }
 
-// Function to display color meanings
 void displayColorMeanings() {
     std::cout << "Token Color Meanings:\n";
     std::cout << "\033[1;32mGreen\033[0m: Numbers\n";
@@ -153,7 +151,7 @@ void displayColorMeanings() {
 }
 
 int main() {
-    displayColorMeanings(); // Display the color meanings
+    displayColorMeanings(); 
 
     std::string code = R"(
 use std::io;
